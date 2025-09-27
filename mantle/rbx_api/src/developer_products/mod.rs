@@ -95,28 +95,28 @@ impl RobloxApi {
         handle_as_json(res).await
     }
 
-
     pub async fn get_all_developer_products(
-    &self,
-    universe_id: AssetId,
-) -> RobloxApiResult<Vec<ListDeveloperProductResponseItem>> {
-    let mut all_products = Vec::new();
-    let mut cursor: Option<String> = None;
+        &self,
+        universe_id: AssetId,
+    ) -> RobloxApiResult<Vec<ListDeveloperProductResponseItem>> {
+        let mut all_products = Vec::new();
+        let mut cursor: Option<String> = None;
 
-    loop {
-        let res = self.list_developer_products(universe_id, 100, cursor).await?;
-        all_products.extend(res.developer_products);
+        loop {
+            let res = self
+                .list_developer_products(universe_id, 100, cursor)
+                .await?;
+            all_products.extend(res.developer_products);
 
-        if let Some(next) = res.next_page_cursor {
-            cursor = Some(next);
-        } else {
-            break;
+            if let Some(next) = res.next_page_cursor {
+                cursor = Some(next);
+            } else {
+                break;
+            }
         }
+
+        Ok(all_products)
     }
-
-    Ok(all_products)
-}
-
 
     pub async fn get_developer_product(
         &self,

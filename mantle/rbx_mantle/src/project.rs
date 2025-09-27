@@ -22,7 +22,7 @@ fn run_command(dir: PathBuf, command: &str) -> std::io::Result<std::process::Out
             .arg(command)
             .output()
     } else {
-         Command::new("sh")
+        Command::new("sh")
             .current_dir(dir)
             .arg("-c")
             .arg(command)
