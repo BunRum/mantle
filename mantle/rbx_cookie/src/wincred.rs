@@ -10,7 +10,7 @@ type Error = Box<dyn std::error::Error>;
 /// Converts a string to a nul-terminated wide UTF-16 byte sequence.
 fn wstr(s: &str) -> Vec<u16> {
     let mut wide: Vec<u16> = OsStr::new(s).encode_wide().collect();
-    if wide.iter().any(|b| *b == 0) {
+    if wide.contains(&0) {
         panic!("nul byte in wide string");
     }
     wide.push(0);
