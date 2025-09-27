@@ -69,45 +69,54 @@ impl RobloxApi {
 
     pub async fn list_developer_products(
         &self,
-        experience_id: AssetId,
-        page: u32,
+        universe_id: AssetId,
+        limit: u32,
+        cursor: Option<String>,
     ) -> RobloxApiResult<ListDeveloperProductsResponse> {
         let res = self
             .csrf_token_store
             .send_request(|| async {
-                Ok(self
+                let mut req = self
                     .client
-                    .get("https://apis.roblox.com/developer-products/v1/developer-products/list")
-                    .query(&[
-                        ("universeId", &experience_id.to_string()),
-                        ("page", &page.to_string()),
-                    ]))
+                    .get(format!(
+                        "https://apis.roblox.com/developer-products/v2/universes/{}/developerproducts",
+                        universe_id
+                    ))
+                    .query(&[("limit", &limit.to_string())]);
+
+                if let Some(c) = &cursor {
+                    req = req.query(&[("cursor", c)]);
+                }
+
+                Ok(req)
             })
             .await;
 
         handle_as_json(res).await
     }
 
+
     pub async fn get_all_developer_products(
-        &self,
-        experience_id: AssetId,
-    ) -> RobloxApiResult<Vec<ListDeveloperProductResponseItem>> {
-        let mut all_products = Vec::new();
+    &self,
+    universe_id: AssetId,
+) -> RobloxApiResult<Vec<ListDeveloperProductResponseItem>> {
+    let mut all_products = Vec::new();
+    let mut cursor: Option<String> = None;
 
-        let mut page: u32 = 1;
-        loop {
-            let res = self.list_developer_products(experience_id, page).await?;
-            all_products.extend(res.developer_products);
+    loop {
+        let res = self.list_developer_products(universe_id, 100, cursor).await?;
+        all_products.extend(res.developer_products);
 
-            if res.final_page {
-                break;
-            }
-
-            page += 1;
+        if let Some(next) = res.next_page_cursor {
+            cursor = Some(next);
+        } else {
+            break;
         }
-
-        Ok(all_products)
     }
+
+    Ok(all_products)
+}
+
 
     pub async fn get_developer_product(
         &self,

@@ -1,10 +1,7 @@
 [workspace]
 members = [
-    # bins
     "mantle",
     "gen_schema",
-
-    # libs
     "rbx_mantle",
     "rbx_api",
     "rbx_auth",
@@ -12,3 +9,4 @@ members = [
     "logger",
     "integration_executor"
 ]
+resolver = "2"

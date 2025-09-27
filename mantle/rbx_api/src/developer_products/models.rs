@@ -32,8 +32,8 @@ pub struct ListDeveloperProductResponseItem {
 }
 
 #[derive(Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all = "camelCase")]
 pub struct ListDeveloperProductsResponse {
     pub developer_products: Vec<ListDeveloperProductResponseItem>,
-    pub final_page: bool,
+    pub next_page_cursor: Option<String>,
 }
